@@ -11,12 +11,14 @@ import { Resources } from './sections/Resources';
 import { Footer } from './sections/Footer';
 import { CursorTrail } from './components/CursorTrail';
 import { ParallaxBackground } from './components/ParallaxBackground';
+import { MusicPlayer } from './components/MusicPlayer';
 
 function App() {
   return (
     <>
       <CursorTrail />
       <ParallaxBackground />
+      <MusicPlayer />
       <SmoothScroll>
         {/* Changed bg-fossil-dark to transparent because ParallaxBackground handles the background */}
         <main className="bg-transparent min-h-screen text-museum-wall selection:bg-excavation-orange selection:text-white overflow-x-hidden">
