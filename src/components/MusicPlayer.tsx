@@ -18,52 +18,43 @@ export const MusicPlayer = () => {
   const requestRef = useRef<number>();
 
   useEffect(() => {
-    const audio = new Audio(musicFile);
-    audio.loop = true;
-    audio.volume = volume;
-    audio.muted = isMuted;
-    audioRef.current = audio;
-
-    const attemptPlay = () => {
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          setIsPlaying(true);
-          setupAudioContext();
-          removeListeners();
-        }).catch((err) => {
-          console.log("Autoplay prevented. Waiting for interaction.", err);
-        });
-      }
-    };
-
+    // We add listeners for first interaction to force play if autoplay was blocked
     const handleFirstInteraction = () => {
       if (audioRef.current && audioRef.current.paused) {
-        attemptPlay();
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      }
+      setHasInteracted(true);
+      if (audioContextRef.current?.state === 'suspended') {
+        audioContextRef.current.resume();
       }
     };
 
-    const removeListeners = () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('scroll', handleFirstInteraction);
-      window.removeEventListener('mousemove', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
-    };
-
-    // Try immediately on load
-    attemptPlay();
-
-    // Attach to any early interaction if blocked
     window.addEventListener('click', handleFirstInteraction);
     window.addEventListener('scroll', handleFirstInteraction);
     window.addEventListener('mousemove', handleFirstInteraction);
     window.addEventListener('touchstart', handleFirstInteraction);
     window.addEventListener('keydown', handleFirstInteraction);
 
+    // Initial explicit play attempt
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((e) => {
+          console.log("Autoplay prevented:", e);
+        });
+      }
+    }
+
     return () => {
-      audio.pause();
-      removeListeners();
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('scroll', handleFirstInteraction);
+      window.removeEventListener('mousemove', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close();
@@ -105,42 +96,26 @@ export const MusicPlayer = () => {
     requestRef.current = requestAnimationFrame(updateVisualizer);
   };
 
-  const handleInteraction = () => {
-    if (!hasInteracted) {
-      setHasInteracted(true);
-      if (audioContextRef.current?.state === 'suspended') {
-        audioContextRef.current.resume();
-      }
-    }
-  };
-
   const togglePlay = () => {
-    handleInteraction();
     if (!audioRef.current) return;
     
     if (isPlaying) {
       audioRef.current.pause();
-      setIsPlaying(false);
     } else {
       if (!audioContextRef.current) {
         setupAudioContext();
       }
-      
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(e => console.error("Play failed:", e));
+      audioRef.current.play().catch(e => console.error("Play failed:", e));
     }
   };
 
   const toggleMute = () => {
-    handleInteraction();
     if (!audioRef.current) return;
     audioRef.current.muted = !isMuted;
     setIsMuted(!isMuted);
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleInteraction();
     const newVol = parseFloat(e.target.value);
     setVolume(newVol);
     if (audioRef.current) {
@@ -162,71 +137,84 @@ export const MusicPlayer = () => {
   });
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex items-center h-12" onMouseEnter={() => setIsExpanded(true)} onMouseLeave={() => setIsExpanded(false)}>
-      <motion.div 
-        layout
-        className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-full h-full flex items-center overflow-hidden shadow-2xl"
-        initial={{ width: 48 }}
-        animate={{ width: isExpanded ? 220 : 48 }}
-        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-      >
-        <button 
-          onClick={togglePlay}
-          className="w-12 h-12 flex items-center justify-center shrink-0 group relative"
+    <>
+      <audio 
+        ref={audioRef}
+        src={musicFile}
+        autoPlay
+        loop
+        onPlay={() => {
+          setIsPlaying(true);
+          if (!audioContextRef.current) setupAudioContext();
+        }}
+        onPause={() => setIsPlaying(false)}
+      />
+      <div className="fixed bottom-6 left-6 z-50 flex items-center h-12" onMouseEnter={() => setIsExpanded(true)} onMouseLeave={() => setIsExpanded(false)}>
+        <motion.div 
+          layout
+          className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-full h-full flex items-center overflow-hidden shadow-2xl"
+          initial={{ width: 48 }}
+          animate={{ width: isExpanded ? 220 : 48 }}
+          transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
         >
-          {isPlaying ? (
-            <div className="flex items-end justify-center gap-[2px] h-4 w-4">
-              {bars.map((height, i) => (
-                <motion.div
-                  key={i}
-                  className="w-1 bg-excavation-orange rounded-full group-hover:bg-white transition-colors"
-                  animate={{ height: `${height}px` }}
-                  transition={{ type: 'tween', duration: 0.05 }}
-                />
-              ))}
-            </div>
-          ) : (
-            <Music className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" />
-          )}
-        </button>
-
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.2, delay: 0.1 }}
-              className="flex items-center px-2 gap-4 whitespace-nowrap"
-            >
-              <button 
-                onClick={togglePlay}
-                className="text-white hover:text-excavation-orange transition-colors"
-              >
-                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-              </button>
-              
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={toggleMute}
-                  className="text-white/70 hover:text-white transition-colors"
-                >
-                  {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </button>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="1" 
-                  step="0.01" 
-                  value={isMuted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  className="w-20 h-1 bg-white/20 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-excavation-orange [&::-webkit-slider-thumb]:rounded-full cursor-pointer hover:[&::-webkit-slider-thumb]:scale-125 [&::-webkit-slider-thumb]:transition-transform"
-                />
+          <button 
+            onClick={togglePlay}
+            className="w-12 h-12 flex items-center justify-center shrink-0 group relative"
+          >
+            {isPlaying ? (
+              <div className="flex items-end justify-center gap-[2px] h-4 w-4">
+                {bars.map((height, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1 bg-excavation-orange rounded-full group-hover:bg-white transition-colors"
+                    animate={{ height: `${height}px` }}
+                    transition={{ type: 'tween', duration: 0.05 }}
+                  />
+                ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </div>
+            ) : (
+              <Music className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" />
+            )}
+          </button>
+
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
+                className="flex items-center px-2 gap-4 whitespace-nowrap"
+              >
+                <button 
+                  onClick={togglePlay}
+                  className="text-white hover:text-excavation-orange transition-colors"
+                >
+                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+                </button>
+                
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={toggleMute}
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="1" 
+                    step="0.01" 
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="w-20 h-1 bg-white/20 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-excavation-orange [&::-webkit-slider-thumb]:rounded-full cursor-pointer hover:[&::-webkit-slider-thumb]:scale-125 [&::-webkit-slider-thumb]:transition-transform"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    </>
   );
 };
