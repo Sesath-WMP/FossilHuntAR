@@ -24,19 +24,46 @@ export const MusicPlayer = () => {
     audio.muted = isMuted;
     audioRef.current = audio;
 
-    // Attempt to autoplay
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        setIsPlaying(true);
-        setupAudioContext();
-      }).catch((err) => {
-        console.log("Autoplay prevented. User interaction needed.", err);
-      });
-    }
+    const attemptPlay = () => {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setIsPlaying(true);
+          setupAudioContext();
+          removeListeners();
+        }).catch((err) => {
+          console.log("Autoplay prevented. Waiting for interaction.", err);
+        });
+      }
+    };
+
+    const handleFirstInteraction = () => {
+      if (audioRef.current && audioRef.current.paused) {
+        attemptPlay();
+      }
+    };
+
+    const removeListeners = () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('scroll', handleFirstInteraction);
+      window.removeEventListener('mousemove', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
+
+    // Try immediately on load
+    attemptPlay();
+
+    // Attach to any early interaction if blocked
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('scroll', handleFirstInteraction);
+    window.addEventListener('mousemove', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+    window.addEventListener('keydown', handleFirstInteraction);
 
     return () => {
       audio.pause();
+      removeListeners();
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close();
