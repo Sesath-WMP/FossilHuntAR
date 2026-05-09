@@ -9,7 +9,6 @@ export const MusicPlayer = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -19,23 +18,24 @@ export const MusicPlayer = () => {
 
   useEffect(() => {
     const handleFirstInteraction = () => {
+      // Synchronously set up or resume audio context during the user gesture
+      if (!audioContextRef.current) {
+        setupAudioContext();
+      } else if (audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+
       if (audioRef.current && audioRef.current.paused) {
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
           playPromise.then(() => {
-            setHasInteracted(true);
             removeListeners();
           }).catch(() => {
             // Autoplay still blocked, wait for another interaction
           });
         }
       } else {
-        setHasInteracted(true);
         removeListeners();
-      }
-      
-      if (audioContextRef.current?.state === 'suspended') {
-        audioContextRef.current.resume();
       }
     };
 
@@ -60,9 +60,8 @@ export const MusicPlayer = () => {
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          setHasInteracted(true);
           removeListeners();
-        }).catch((e) => {
+        }).catch(() => {
           console.log("Autoplay prevented by browser policy. Waiting for user interaction.");
         });
       }

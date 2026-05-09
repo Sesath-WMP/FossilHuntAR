@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Compass, Book, Shovel, Skull, Bone, PlayCircle, ChevronDown, Target, Brain, Puzzle, BookOpen, ArrowRight } from 'lucide-react';
+import { Book, Shovel, Skull, Bone, PlayCircle, ChevronDown, Target, Brain, Puzzle, BookOpen, ArrowRight } from 'lucide-react';
 import bgImage from '../img/background.png';
 import logoImage from '../img/fossilhunt logo.png';
 

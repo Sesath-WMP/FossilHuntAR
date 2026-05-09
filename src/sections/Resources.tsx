@@ -6,11 +6,6 @@ import docThesis from '../img/Docs/Final Thiesis IT22249920.pdf';
 import docProposal from '../img/Docs/IT22249920_Proposal Final.pdf';
 import docPresentation from '../img/Docs/Proposal Presentation.pdf';
 
-import target1 from '../img/imgTargets/X1.jpg';
-import target2 from '../img/imgTargets/X2.jpg';
-import target3 from '../img/imgTargets/X3.jpg';
-import target4 from '../img/imgTargets/X4.jpg';
-
 export function Resources() {
   const [showContactModal, setShowContactModal] = useState(false);
 
