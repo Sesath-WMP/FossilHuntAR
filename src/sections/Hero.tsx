@@ -38,11 +38,6 @@ export function Hero() {
               <li><a href="#contact" className="hover:text-[#FFB300] transition-colors">Contact</a></li>
             </ul>
           </div>
-
-          <button className="flex items-center gap-2 bg-[#5D4037]/80 hover:bg-[#3E2723] backdrop-blur-sm px-6 py-2.5 rounded-xl border border-[#8D6E63]/30 transition-all shadow-lg text-sm font-semibold">
-            <Compass size={18} className="text-[#FFB300]" />
-            Explore Now
-          </button>
         </nav>
 
         {/* Main Content Area */}

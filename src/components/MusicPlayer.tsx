@@ -40,16 +40,19 @@ export const MusicPlayer = () => {
     };
 
     const removeListeners = () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
+      document.removeEventListener('click', handleFirstInteraction, true);
+      document.removeEventListener('pointerdown', handleFirstInteraction, true);
+      document.removeEventListener('touchstart', handleFirstInteraction, true);
+      document.removeEventListener('keydown', handleFirstInteraction, true);
+      document.removeEventListener('scroll', handleFirstInteraction, true);
     };
 
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('pointerdown', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-    window.addEventListener('keydown', handleFirstInteraction);
+    // Use capture phase (true) to catch events before any React components can call stopPropagation
+    document.addEventListener('click', handleFirstInteraction, true);
+    document.addEventListener('pointerdown', handleFirstInteraction, true);
+    document.addEventListener('touchstart', handleFirstInteraction, true);
+    document.addEventListener('keydown', handleFirstInteraction, true);
+    document.addEventListener('scroll', handleFirstInteraction, true);
 
     // Initial explicit play attempt
     if (audioRef.current) {
