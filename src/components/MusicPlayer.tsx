@@ -45,6 +45,8 @@ export const MusicPlayer = () => {
       document.removeEventListener('touchstart', handleFirstInteraction, true);
       document.removeEventListener('keydown', handleFirstInteraction, true);
       document.removeEventListener('scroll', handleFirstInteraction, true);
+      document.removeEventListener('wheel', handleFirstInteraction, true);
+      document.removeEventListener('touchmove', handleFirstInteraction, true);
     };
 
     // Use capture phase (true) to catch events before any React components can call stopPropagation
@@ -53,6 +55,8 @@ export const MusicPlayer = () => {
     document.addEventListener('touchstart', handleFirstInteraction, true);
     document.addEventListener('keydown', handleFirstInteraction, true);
     document.addEventListener('scroll', handleFirstInteraction, true);
+    document.addEventListener('wheel', handleFirstInteraction, true);
+    document.addEventListener('touchmove', handleFirstInteraction, true);
 
     // Initial explicit play attempt
     if (audioRef.current) {
