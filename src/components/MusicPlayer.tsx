@@ -18,23 +18,36 @@ export const MusicPlayer = () => {
   const requestRef = useRef<number>();
 
   useEffect(() => {
-    // We add listeners for first interaction to force play if autoplay was blocked
     const handleFirstInteraction = () => {
       if (audioRef.current && audioRef.current.paused) {
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
-          playPromise.catch(() => {});
+          playPromise.then(() => {
+            setHasInteracted(true);
+            removeListeners();
+          }).catch(() => {
+            // Autoplay still blocked, wait for another interaction
+          });
         }
+      } else {
+        setHasInteracted(true);
+        removeListeners();
       }
-      setHasInteracted(true);
+      
       if (audioContextRef.current?.state === 'suspended') {
         audioContextRef.current.resume();
       }
     };
 
+    const removeListeners = () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
+
     window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('scroll', handleFirstInteraction);
-    window.addEventListener('mousemove', handleFirstInteraction);
+    window.addEventListener('pointerdown', handleFirstInteraction);
     window.addEventListener('touchstart', handleFirstInteraction);
     window.addEventListener('keydown', handleFirstInteraction);
 
@@ -43,18 +56,17 @@ export const MusicPlayer = () => {
       audioRef.current.volume = volume;
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch((e) => {
-          console.log("Autoplay prevented:", e);
+        playPromise.then(() => {
+          setHasInteracted(true);
+          removeListeners();
+        }).catch((e) => {
+          console.log("Autoplay prevented by browser policy. Waiting for user interaction.");
         });
       }
     }
 
     return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('scroll', handleFirstInteraction);
-      window.removeEventListener('mousemove', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
+      removeListeners();
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close();
