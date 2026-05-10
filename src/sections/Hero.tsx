@@ -5,23 +5,27 @@ import logoImage from '../img/fossilhunt logo.png';
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden font-sans text-white select-none">
+    <section className="relative min-h-[100dvh] w-full overflow-hidden font-sans text-white select-none">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src={bgImage} 
-          alt="Museum Background" 
-          className="w-full h-full object-cover"
-        />
+      <div className="absolute inset-0 z-0 bg-[#291b15]">
+        <div className="w-full h-full max-md:h-[60vh] relative">
+          <img 
+            src={bgImage} 
+            alt="Museum Background" 
+            className="w-full h-full object-cover max-md:object-contain max-md:object-top"
+          />
+          {/* Gradient to fade bottom of image into the dark background on mobile */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#291b15]/20 to-[#291b15] hidden max-md:block" />
+        </div>
         {/* Subtle gradient overlay to ensure text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#291b15] max-md:hidden" />
       </div>
 
-      <div className="relative z-10 w-full h-full min-h-screen flex flex-col justify-between pt-6 pb-8">
+      <div className="relative z-10 w-full h-full min-h-[100dvh] flex flex-col justify-between pt-6 pb-8">
         
         {/* Top Navigation */}
-        <nav className="px-8 flex justify-between items-center">
+        <nav className="px-4 md:px-8 flex justify-between items-center">
           <div className="flex items-center gap-12">
             {/* Small Logo */}
             <img src={logoImage} alt="Fossil Hunt AR Logo" className="h-12 object-contain filter drop-shadow-md" />
@@ -41,7 +45,7 @@ export function Hero() {
         </nav>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex items-center w-full px-8 mt-4 relative">
+        <div className="flex-1 flex items-center w-full px-4 md:px-8 mt-4 relative">
           
           {/* Left Sidebar Menu */}
           <div className="hidden md:flex flex-col gap-4 absolute left-8 top-1/2 -translate-y-1/2 z-20">
@@ -59,21 +63,21 @@ export function Hero() {
           </div>
 
           {/* Hero Content */}
-          <div className="max-w-2xl ml-0 md:ml-32 lg:ml-40 z-10 flex flex-col items-start">
+          <div className="max-w-2xl ml-0 md:ml-32 lg:ml-40 z-10 flex flex-col items-start max-md:items-center max-md:text-center max-md:mt-8">
             <motion.img 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               src={logoImage} 
               alt="Fossil Hunt AR" 
-              className="w-[500px] max-w-full drop-shadow-2xl mb-6"
+              className="w-[500px] max-w-full drop-shadow-2xl mb-6 max-md:mb-4 max-md:w-[280px]"
             />
             
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-4xl md:text-5xl font-extrabold mb-4 text-[#FFB300] drop-shadow-lg tracking-wide uppercase leading-tight"
+              className="text-4xl md:text-5xl font-extrabold mb-4 text-[#FFB300] drop-shadow-lg tracking-wide uppercase leading-tight max-md:text-3xl max-md:mb-3"
             >
               Discover the Legends.<br />
               <span className="text-white">Revive the Past.</span>
@@ -83,7 +87,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-lg text-gray-200 mb-8 max-w-xl leading-relaxed drop-shadow-md font-medium"
+              className="text-lg text-gray-200 mb-8 max-w-xl leading-relaxed drop-shadow-md font-medium max-md:text-sm max-md:mb-6 max-md:max-w-[90%]"
             >
               Step into a lost world with Fossil Hunt AR, an immersive augmented reality adventure that brings prehistoric creatures to life in your museum.
             </motion.p>
@@ -92,13 +96,13 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-wrap gap-4"
+              className="flex flex-wrap gap-4 max-md:gap-3 max-md:w-full max-md:justify-center"
             >
-              <button className="flex items-center gap-2 bg-gradient-to-r from-[#FFB300] to-[#FF8F00] hover:from-[#FF8F00] hover:to-[#E65100] text-[#291b15] px-8 py-3.5 rounded-xl font-bold transition-all transform hover:scale-105 shadow-[0_4px_20px_rgba(255,179,0,0.4)]">
+              <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#FFB300] to-[#FF8F00] hover:from-[#FF8F00] hover:to-[#E65100] text-[#291b15] px-8 py-3.5 rounded-xl font-bold transition-all transform hover:scale-105 shadow-[0_4px_20px_rgba(255,179,0,0.4)] max-md:w-full max-md:max-w-[300px]">
                 Start Your Adventure
                 <ArrowRight size={20} />
               </button>
-              <button className="flex items-center gap-2 bg-[#5D4037]/80 hover:bg-[#3E2723] backdrop-blur-sm border border-[#8D6E63]/40 text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-lg group">
+              <button className="flex items-center justify-center gap-2 bg-[#5D4037]/80 hover:bg-[#3E2723] backdrop-blur-sm border border-[#8D6E63]/40 text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-lg group max-md:w-full max-md:max-w-[300px]">
                 Watch Trailer
                 <PlayCircle size={20} className="text-[#FFB300] group-hover:scale-110 transition-transform" />
               </button>
@@ -130,18 +134,18 @@ export function Hero() {
         <div className="w-full flex flex-col items-center gap-8 mt-12 relative z-10">
           
           {/* Features Bar */}
-          <div className="flex flex-wrap justify-center gap-4 px-4">
+          <div className="flex flex-wrap justify-center gap-4 px-4 max-md:gap-2">
             {[
               { icon: Target, title: 'AR EXPLORATION', desc: 'Real-world Interactions' },
               { icon: Brain, title: 'ACTIVE LEARNING', desc: 'Quizzes & Research Challenges' },
               { icon: Puzzle, title: 'COLLECT & BUILD', desc: 'Assemble Ancient Giants' },
               { icon: BookOpen, title: 'EDUCATIONAL FUN', desc: 'Learn with our Virtual Guide' },
             ].map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-4 bg-[#291b15]/70 backdrop-blur-md px-6 py-4 rounded-2xl border border-[#5D4037]/50 shadow-lg hover:bg-[#3E2723]/80 transition-colors cursor-pointer w-full sm:w-auto">
-                <feature.icon size={32} className="text-[#FF8F00] flex-shrink-0" />
+              <div key={idx} className="flex items-center gap-4 bg-[#291b15]/70 backdrop-blur-md px-6 py-4 max-md:px-4 max-md:py-3 rounded-2xl border border-[#5D4037]/50 shadow-lg hover:bg-[#3E2723]/80 transition-colors cursor-pointer w-full sm:w-auto max-md:gap-3">
+                <feature.icon size={32} className="text-[#FF8F00] flex-shrink-0 max-md:w-6 max-md:h-6" />
                 <div className="flex flex-col">
-                  <span className="font-bold text-sm text-[#FFB300] tracking-wide">{feature.title}</span>
-                  <span className="text-xs text-gray-300">{feature.desc}</span>
+                  <span className="font-bold text-sm text-[#FFB300] tracking-wide max-md:text-xs">{feature.title}</span>
+                  <span className="text-xs text-gray-300 max-md:text-[10px]">{feature.desc}</span>
                 </div>
               </div>
             ))}
