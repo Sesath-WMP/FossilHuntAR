@@ -17,10 +17,12 @@ export function GroundParallax() {
         src={groundImg} 
         alt="Underground dirt transition" 
         className="w-full object-cover min-h-[200px]" 
-        style={{ transform: 'translate3d(0, 0, 0)' }}
+        style={{ 
+          transform: 'translate3d(0, 0, 0)',
+          maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)'
+        }}
       />
-      {/* Fade out the underground darkness downwards */}
-      <div className="w-full h-[30vh] bg-gradient-to-b from-[#1a110b] to-transparent -mt-2" style={{ transform: 'translate3d(0, 0, 0)' }} />
     </motion.div>
   );
 }
