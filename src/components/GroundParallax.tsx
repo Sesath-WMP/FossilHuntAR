@@ -11,7 +11,7 @@ export function GroundParallax() {
   return (
     <motion.div
       style={{ y, z: 0 }}
-      className="fixed top-[100vh] left-0 w-full pointer-events-none z-[5]"
+      className="fixed top-[75vh] left-0 w-full pointer-events-none z-[5]"
     >
       <img 
         src={groundImg} 
