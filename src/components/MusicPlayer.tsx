@@ -17,7 +17,11 @@ export const MusicPlayer = () => {
   const requestRef = useRef<number>();
 
   useEffect(() => {
+    let isAttemptingPlay = false;
+
     const handleFirstInteraction = () => {
+      if (isAttemptingPlay) return;
+
       // Synchronously set up or resume audio context during the user gesture
       if (!audioContextRef.current) {
         setupAudioContext();
@@ -26,48 +30,48 @@ export const MusicPlayer = () => {
       }
 
       if (audioRef.current && audioRef.current.paused) {
+        isAttemptingPlay = true;
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
           playPromise.then(() => {
             removeListeners();
+            isAttemptingPlay = false;
           }).catch(() => {
             // Autoplay still blocked, wait for another interaction
+            isAttemptingPlay = false;
           });
+        } else {
+          isAttemptingPlay = false;
         }
       } else {
         removeListeners();
       }
     };
 
+    const events = ['click', 'pointerdown', 'touchstart', 'keydown', 'scroll', 'wheel', 'touchmove', 'mousemove'];
+
     const removeListeners = () => {
-      document.removeEventListener('click', handleFirstInteraction, true);
-      document.removeEventListener('pointerdown', handleFirstInteraction, true);
-      document.removeEventListener('touchstart', handleFirstInteraction, true);
-      document.removeEventListener('keydown', handleFirstInteraction, true);
-      document.removeEventListener('scroll', handleFirstInteraction, true);
-      document.removeEventListener('wheel', handleFirstInteraction, true);
-      document.removeEventListener('touchmove', handleFirstInteraction, true);
+      events.forEach(e => document.removeEventListener(e, handleFirstInteraction, { capture: true } as any));
     };
 
-    // Use capture phase (true) to catch events before any React components can call stopPropagation
-    document.addEventListener('click', handleFirstInteraction, true);
-    document.addEventListener('pointerdown', handleFirstInteraction, true);
-    document.addEventListener('touchstart', handleFirstInteraction, true);
-    document.addEventListener('keydown', handleFirstInteraction, true);
-    document.addEventListener('scroll', handleFirstInteraction, true);
-    document.addEventListener('wheel', handleFirstInteraction, true);
-    document.addEventListener('touchmove', handleFirstInteraction, true);
+    // Use capture phase and passive to catch events efficiently
+    events.forEach(e => document.addEventListener(e, handleFirstInteraction, { capture: true, passive: true }));
 
     // Initial explicit play attempt
     if (audioRef.current) {
       audioRef.current.volume = volume;
+      isAttemptingPlay = true;
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           removeListeners();
+          isAttemptingPlay = false;
         }).catch(() => {
           console.log("Autoplay prevented by browser policy. Waiting for user interaction.");
+          isAttemptingPlay = false;
         });
+      } else {
+        isAttemptingPlay = false;
       }
     }
 
