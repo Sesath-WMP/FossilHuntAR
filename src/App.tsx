@@ -11,6 +11,7 @@ import { Resources } from './sections/Resources';
 import { Footer } from './sections/Footer';
 import { CursorTrail } from './components/CursorTrail';
 import { ParallaxBackground } from './components/ParallaxBackground';
+import { GroundParallax } from './components/GroundParallax';
 import { MusicPlayer } from './components/MusicPlayer';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <>
       <CursorTrail />
       <ParallaxBackground />
+      <GroundParallax />
       <MusicPlayer />
       <SmoothScroll>
         {/* Changed bg-fossil-dark to transparent because ParallaxBackground handles the background */}

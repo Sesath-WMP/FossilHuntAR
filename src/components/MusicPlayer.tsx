@@ -6,7 +6,7 @@ import musicFile from '../img/Fossil Hunt.mp3';
 
 export const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0.5);
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -29,22 +29,28 @@ export const MusicPlayer = () => {
         audioContextRef.current.resume();
       }
 
-      if (audioRef.current && audioRef.current.paused) {
-        isAttemptingPlay = true;
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            removeListeners();
+      if (audioRef.current) {
+        audioRef.current.muted = false;
+        setIsMuted(false);
+        audioRef.current.volume = volume;
+
+        if (audioRef.current.paused) {
+          isAttemptingPlay = true;
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              removeListeners();
+              isAttemptingPlay = false;
+            }).catch(() => {
+              // Autoplay still blocked, wait for another interaction
+              isAttemptingPlay = false;
+            });
+          } else {
             isAttemptingPlay = false;
-          }).catch(() => {
-            // Autoplay still blocked, wait for another interaction
-            isAttemptingPlay = false;
-          });
+          }
         } else {
-          isAttemptingPlay = false;
+          removeListeners();
         }
-      } else {
-        removeListeners();
       }
     };
 
@@ -57,23 +63,8 @@ export const MusicPlayer = () => {
     // Use capture phase and passive to catch events efficiently
     events.forEach(e => document.addEventListener(e, handleFirstInteraction, { capture: true, passive: true }));
 
-    // Initial explicit play attempt
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-      isAttemptingPlay = true;
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          removeListeners();
-          isAttemptingPlay = false;
-        }).catch(() => {
-          console.log("Autoplay prevented by browser policy. Waiting for user interaction.");
-          isAttemptingPlay = false;
-        });
-      } else {
-        isAttemptingPlay = false;
-      }
-    }
+    // Since audio is autoPlay and muted, we don't need an explicit play attempt here.
+    // The handleFirstInteraction will handle un-muting when the user interacts.
 
     return () => {
       removeListeners();
@@ -164,6 +155,7 @@ export const MusicPlayer = () => {
         ref={audioRef}
         src={musicFile}
         autoPlay
+        muted
         loop
         onPlay={() => {
           setIsPlaying(true);
