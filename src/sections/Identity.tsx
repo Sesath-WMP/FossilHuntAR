@@ -6,7 +6,7 @@ import coSupervisorImage from '../img/Supervisors/Co-Supervisor Mr. Nushkan Nizm
 
 export function Identity() {
   return (
-    <section id="about" className="relative py-32 overflow-hidden bg-transparent">
+    <section id="about" className="relative z-20 py-32 overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}

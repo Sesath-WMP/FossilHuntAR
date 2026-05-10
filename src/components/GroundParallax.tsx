@@ -11,7 +11,7 @@ export function GroundParallax() {
   return (
     <motion.div
       style={{ y, z: 0 }}
-      className="fixed top-[75vh] left-0 w-full pointer-events-none z-[5]"
+      className="fixed top-[75vh] max-md:top-[100vh] left-0 w-full pointer-events-none z-[15]"
     >
       <img 
         src={groundImg} 
@@ -19,8 +19,8 @@ export function GroundParallax() {
         className="w-full object-cover min-h-[200px]" 
         style={{ transform: 'translate3d(0, 0, 0)' }}
       />
-      {/* Extend the underground darkness downwards endlessly */}
-      <div className="w-full h-[500vh] bg-gradient-to-b from-[#1a110b] to-[#0d0805] -mt-2" style={{ transform: 'translate3d(0, 0, 0)' }} />
+      {/* Fade out the underground darkness downwards */}
+      <div className="w-full h-[30vh] bg-gradient-to-b from-[#1a110b] to-transparent -mt-2" style={{ transform: 'translate3d(0, 0, 0)' }} />
     </motion.div>
   );
 }

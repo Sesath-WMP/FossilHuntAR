@@ -5,7 +5,7 @@ import logoImage from '../img/fossilhunt logo.png';
 
 export function Hero() {
   return (
-    <section className="relative min-h-[100dvh] w-full overflow-hidden font-sans text-white select-none">
+    <section id="home" className="relative z-10 min-h-[100dvh] w-full overflow-hidden font-sans text-white select-none">
       {/* Background Image */}
       <div className="absolute inset-0 z-0 bg-[#291b15]">
         <div className="w-full h-full max-md:h-[60vh] relative">
