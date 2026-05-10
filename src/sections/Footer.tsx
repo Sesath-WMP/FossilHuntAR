@@ -42,11 +42,10 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-bold text-white mb-6">Contact & Info</h4>
             <ul className="space-y-3 text-museum-wall/60">
-              <li>Lead Researcher: John Doe</li>
-              <li>University Context Placeholder</li>
+              <li>Lead Researcher & Developer: Sesath Wickramasinghe</li>
               <li>Project Year: 2026</li>
-              <li>Specialization: Educational Tech</li>
-              <li>contact@fossilhuntar.com</li>
+              <li>Specialization: Interactive Media</li>
+              <li>Contact: sinsanduwickramasinghe@gmail.com / +94704244261</li>
             </ul>
           </div>
         </div>
